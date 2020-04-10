@@ -6,6 +6,7 @@ namespace App\Controller;
 /**
  * Pagos Controller
  *
+ * @property \App\Model\Table\PagosTable $Pagos
  *
  * @method \App\Model\Entity\Pago[]|\Cake\Datasource\ResultSetInterface paginate($object = null, array $settings = [])
  */
@@ -18,13 +19,12 @@ class PagosController extends AppController
      */
     public function index()
     {
+        $this->paginate = [
+            'contain' => ['Participantes'],
+        ];
         $pagos = $this->paginate($this->Pagos);
 
         $this->set(compact('pagos'));
-
-        //echo json_encode($pagos);
-
-        //exit();
     }
 
     /**
@@ -37,7 +37,7 @@ class PagosController extends AppController
     public function view($id = null)
     {
         $pago = $this->Pagos->get($id, [
-            'contain' => [],
+            'contain' => ['Participantes', 'Pagodetalles'],
         ]);
 
         $this->set('pago', $pago);
@@ -60,7 +60,8 @@ class PagosController extends AppController
             }
             $this->Flash->error(__('The pago could not be saved. Please, try again.'));
         }
-        $this->set(compact('pago'));
+        $participantes = $this->Pagos->Participantes->find('list', ['limit' => 200]);
+        $this->set(compact('pago', 'participantes'));
     }
 
     /**
@@ -84,7 +85,8 @@ class PagosController extends AppController
             }
             $this->Flash->error(__('The pago could not be saved. Please, try again.'));
         }
-        $this->set(compact('pago'));
+        $participantes = $this->Pagos->Participantes->find('list', ['limit' => 200]);
+        $this->set(compact('pago', 'participantes'));
     }
 
     /**
